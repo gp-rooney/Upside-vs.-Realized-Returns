@@ -1,0 +1,86 @@
+clear all
+cd "C:\Users\gprooney\Downloads"
+import excel "AAPL_reg_data.xlsx", firstrow
+
+describe
+gen mdate = mofd(date)
+format mdate %tm
+
+// Hypotheses for Coefficients
+// ret_est: negative
+// ret_past: positive
+// log_mktcap: negative
+// vix: positive
+// log_pe: negative
+
+tsset mdate
+
+//EYEBALL STATIONARY
+//twoway line ret_act date // looks stationary, realistically will decrease over time
+//twoway line ret_est date // looks stationary, realistically will decrease over time
+//twoway line ret_past date // looks stationary, realistically will decrease over time
+//twoway line log_mktcap date // trending up
+//twoway line vix date // looks stationary
+//twoway line log_pe date // looks like it drifts a little
+
+// STATIONARY: for variables
+dfuller ret_act         // no trend
+dfuller ret_est         // no trend
+dfuller ret_past        // no trend 
+dfuller log_mktcap, trend // very clear trending
+dfuller vix             // no trend, but closer at 0.0244
+dfuller log_pe, drift          // there is a no trend with p-value after accounting for drift
+
+// REGRESSION
+reg ret_act ret_est ret_past log_mktcap vix log_pe
+predict e_ols, resid
+
+// FUNCTIONAL FORM: Ramsey
+estat ovtest
+
+// MULTICOLLINEARITY
+estat vif
+
+// SERIAL CORRELATION
+ac e_ols // 6 lags are outside the confidence band
+pac e_ols // significant at 8 lags (so staying at the 12 lag as well)
+// Breusch-Godfrey LM
+estat bgodfrey, lags(1/6)
+estat bgodfrey, lags(1/12)
+
+// —-- Heteroskedasticity —--- //
+// Testing For Residual Normality
+sktest e_ols // ___________
+
+// Breusch-Pagan Test
+estat hettest, rhs
+
+// White Test
+estat imtest, white
+
+// NEWEY (assume a lag of 6, will change depending on AIC & pac results)
+newey ret_act ret_est ret_past log_mktcap vix log_pe, lag(12)
+newey ret_act ret_est ret_past log_mktcap vix log_pe, lag(6)
+
+
+
+
+
+
+// -------------------------------------------------------------------
+// EXTRA STUFF
+// -------------------------------------------------------------------
+
+// AIC & BIC test
+//reg ret_act ret_est ret_past log_mktcap vix log_pe
+//estat ic
+//reg ret_act L(1/6).ret_act ret_est ret_past log_mktcap vix log_pe
+//estat ic
+//reg ret_act  L(1/12).ret_act ret_est ret_past log_mktcap vix log_pe
+//estat ic
+
+
+// COINTEGRATION TEST (Is NOT required)
+//reg ret_act ret_est ret_past log_mktcap vix log_pe
+//predict e_ols, resid
+//dfuller e_ols, nocons
