@@ -4,10 +4,6 @@ Time-series study of Apple (AAPL) testing whether analyst target-price implied u
 
 Here’s a deeper README you can paste into `README.md` and then tweak the file names/paths once you upload your `.do` file and dataset.
 
----
-
-# Upside vs. Realized Returns: Evidence from Apple (AAPL)
-
 ## Overview
 
 Investors often see headlines like “analysts expect X% upside” based on consensus target prices. This project tests whether that **target-price–implied upside** actually predicts **future realized returns** for Apple (AAPL), or whether it mainly reflects optimism that gets corrected over time. 
