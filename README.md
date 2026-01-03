@@ -53,7 +53,7 @@ Consensus target price is constructed monthly in Excel as an **AVERAGE() across 
 
 * `ret_est_t`: **target-price–implied return (headline upside)**
   [
-  ret_est_t = \frac{\text{Avg Target Price}_t - \text{Current Price}_t}{\text{Current Price}_t}
+  ret_est_t = (Avg Target Price_t - Current Price_t)\Current Price
   ]
 
 
@@ -78,7 +78,7 @@ Notes:
 I estimate the monthly time-series model:
 
 [
-ret_act_t = \beta_0 + \beta_1 ret_est_t + \beta_2 ret_past_t + \beta_3 log_mktcap_t + \beta_4 vix_t + \beta_5 log_pe_t + u_t
+ret_act_t = B_0 + B_1 ret_est_t + B_2 ret_past_t + B_3 log_mktcap_t + B_4 vix_t + B_5 log_pe_t + u_t
 ]
 
 
